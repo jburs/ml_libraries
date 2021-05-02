@@ -6,7 +6,7 @@ def sigmoid(z):
     return(soln)
 
 # Sigmoin derivative
-def deriv_sigmoin(z):
+def deriv_sigmoid(z):
     soln = sigmoid(z)*(1-sigmoid(z))
     return(soln)
 
