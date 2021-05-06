@@ -26,7 +26,7 @@ def ReLU(z):
     return(soln)
 
 # Relu derivative
-def deric_ReLU(z):
+def deriv_ReLU(z):
     if z > 0:
         return(1)
     else:
