@@ -12,7 +12,7 @@ def mse(predicted, actual):
     return(error)
 
 def deriv_mse(predicted, actual):
-    dE_doutnode = predicted-actual
+    dE_doutnode = -(actual-predicted)
     return(dE_doutnode)
      
 
