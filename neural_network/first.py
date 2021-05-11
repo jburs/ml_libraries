@@ -2,6 +2,7 @@ import numpy as np
 import random
 from activation_fns import sigmoid, deriv_sigmoid
 from error_fns import mse, deriv_mse
+import matplotlib.pyplot as plt 
 
 # Simple data for learing even vs. odd. 1=odd, 0=even
 #  in, hidden, out 
@@ -17,7 +18,7 @@ Y = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
 #       input: 1
 #       hidden layer: 3  sigmoid 
 #       output: 1, sigmoid 
-def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_input_nodes=1, num_output_nodes=1, error_fn=mse, max_epoch=200):
+def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_input_nodes=1, num_output_nodes=1, error_fn=mse, max_epoch=1000, accuracy_threshold=0.4):
     print('initializing')
     print('---------------------\n')
 
@@ -31,7 +32,8 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
     hidden_nodes = np.array([])
     input_bias = np.array([])
     hidden_bias = np.array([])
-    
+    loss_training = np.array([])
+    accuracy_training = np.array([])
 
     # Fill weights
     for i in range(num_hidden_nodes):
@@ -47,6 +49,10 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
     while error > acceptable_error and max_epoch > epoch:
         epoch += 1
         predictions = np.array([])
+
+        # reset loss and accuracy per epoch
+        loss_per_epoch = 0
+        accuracy_per_epoch = 0
 
         # test nn with each point within dataset
         for point in range(len(data)):
@@ -77,8 +83,24 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
             prediction = sigmoid(output_in)
             predictions = np.append(predictions, prediction)
 
-            # Compute Error for each output neuron E = mse
+            # Compute Error and accuracy for each output neuron E = mse
             error = mse(prediction, actual[point])
+            accuracy = (prediction - actual[point])
+            if accuracy < accuracy_threshold:
+                accuracy_per_epoch = accuracy_per_epoch + 1
+            
+                
+
+
+
+            # Store total error for epoch, to later average for a loss per epoch value
+            loss_per_epoch = loss_per_epoch + error
+            
+            
+
+
+
+
 
 
             # Output - Hidden layer backward pass
@@ -94,9 +116,6 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
                 new_weight = hidden_weights[i] - lr*dE_dweight      # Calculate new weight
 
                 hidden_weights_new = np.append(hidden_weights_new, new_weight)  # Store new weights to replace later
-
-
-
 
             # hidden layer - input backward pass (net=net in to node0) (out = output of node (activation fn))
             # dE/dw(input) = dE/douth * douth/dneth * dneth/dw  (each hidden-input layer weight contributes to the output and error of multiple neutons)
@@ -115,11 +134,19 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
                 input_weights_new = np.append(input_weights_new, new_weight)
 
 
-
-
             # update neural network weights 
             hidden_weights = hidden_weights_new
             input_weights = input_weights_new
+
+
+        # epoch finished, store loss and accuracy 
+        loss_per_epoch = loss_per_epoch/len(data)
+        loss_training = np.append(loss_training, loss_per_epoch)
+        accuracy_per_epoch = accuracy_per_epoch/len(data)
+        accuracy_training = np.append(accuracy_training, accuracy_per_epoch)
+
+        
+
 
         # print out # epoch
         if epoch%10 == 0:
@@ -129,14 +156,34 @@ def nn_first(X=X, Y=Y, lr=.05, acceptable_error=.005, num_hidden_nodes=3, num_in
             print(prediction, actual[point])
             print('-----------------------------')
 
+        
 
 
-        # Return neural network
+
+    predictions_round = np.round(predictions)
+        
     print('epoch: ', epoch)
-    results = list(zip(predictions, actual))
+    results = list(zip(predictions_round, actual))
     print(results)
 
-    return(predictions)
+    # Create history variable to pass to return
 
 
-nn_first()
+    # Return neural network
+    return(predictions, loss_training, accuracy_training)
+
+
+
+
+
+predictions, loss, accuracy = nn_first()
+
+
+
+
+
+plt.plot(loss)
+plt.show()
+
+plt.plot(accuracy)
+plt.show()
