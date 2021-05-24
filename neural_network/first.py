@@ -22,7 +22,7 @@ Y = np.array([.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5
 # Simple neural net 
 
 
-def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_input_nodes=1, num_output_nodes=1, max_epoch=500, accuracy_threshold=0.4):
+def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_input_nodes=1, num_output_nodes=1, max_epoch=100, accuracy_threshold=0.4):
     print('initializing')
     print('---------------------\n')
 
@@ -54,8 +54,8 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
         hidden_weights_1 = np.append(hidden_weights_1, random.uniform(-1, 1))
     
     # Set random bias
-    input_bias = np.append(input_bias, random.uniform(-0.5, 0.5))
-    hidden_bias_1 = np.append(hidden_bias_1, random.uniform(-0.5, 0.5))
+    input_bias = np.append(input_bias, random.uniform(0.0, 1.0))
+    hidden_bias_1 = np.append(hidden_bias_1, random.uniform(0.0, 1.0))
 
 
     # Initial loop that checks the overall error of the model, or terminates after too many iterations
@@ -108,7 +108,12 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
 
 
             # Back propogation Start!
-
+            # Swap to delta functions?? 
+            #   Output - Hidden layer backward pass:    delta_out_1 = -(target_O1-out_O1)*out_O1(1-out_O1)
+            #                                           dE/dweight_1 = delta_out_1*out_h1
+            #
+            #   hidden layer - input backward pass:     dE/dweight_1 = (sum_O(delta_out_i * weight_hi) * out_h1(1-out_h1) * input_1)
+            #                                           dE/dweight_1 = delta_h1*input_1
 
             # Output - Hidden layer backward pass
             # Backward pass: gradient of error w.r.t. weights dE/dw = dE/outO*doutO/dnetO*dnetO/dw
@@ -128,15 +133,18 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
             # dE/dw(input) = dE/douth * douth/dneth * dneth/dw  (each hidden-input layer weight contributes to the output and error of multiple neutons)
             # dE/douth = dE/dnetO * dnetO/douth
             # dE/dnetO = dE/doutO * doutO/dnetO
-            # Thus dE/dwi = ((dE/doutO * doutO/dnetO) * dnetO/douth) * douth/dneth * dneth/dw
+            # Thus dE/dwi = (sum Output neurons (dE/doutO * doutO/dnetO * dnetO/douth)) * douth/dneth * dneth/dw
             for i in range(len(input_weights)):
-                dE_doutO = deriv_mse(prediction, actual[point])
-                doutO_dnetO = output_active_fn_deriv(output_in)
-                dnetO_douth = hidden_weights_1[i]
-                douth_dneth = hidden_1_active_fn_deriv(net_in_hidden_1[i])
-                dneth_dw = data[point]
+                dE_doutO = deriv_mse(prediction, actual[point])             # Deriv error neuron w.r.t ouput neurons
+                doutO_dnetO = output_active_fn_deriv(output_in)             # Deriv output w.r.t input to output node
+                dnetO_douth = hidden_weights_1[i]                           # Deriv input to output node w.r.t. hidden node output
+                douth_dneth = hidden_1_active_fn_deriv(net_in_hidden_1[i])  # Deriv hidden node output w.r.t. net input to hidden node
+                dneth_dw = data[point]    # Deriv net input to hidden node w.r.t. weight we are optimizing
+                
+                # For singular outpout neuron, otherwise sum over outputs for (dE_doutO * doutO_dnetO * dnetO_douth)
+                dE_dw = dE_doutO * doutO_dnetO * dnetO_douth * douth_dneth * dneth_dw  # Derive error w.r.t. node we're optimizing
 
-                new_weight = dE_doutO * doutO_dnetO * dnetO_douth * douth_dneth * dneth_dw
+                new_weight = input_weights[i] - lr*dE_dw
 
                 input_weights_new = np.append(input_weights_new, new_weight)
 

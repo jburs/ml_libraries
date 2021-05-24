@@ -93,35 +93,36 @@ def deriv_softmax(soft_in_j, soft_out_i):
 # Function plots
 
 # define input data
-inputs = [x for x in range(-10, 10)]
-sigmoid_out = [sigmoid(x) for x in inputs]
-tanh_out = [tanh(x) for x in inputs]
-ReLU_out = [ReLU(x) for x in inputs]
-linear_out = [linear(x) for x in inputs]
+#inputs = [x for x in range(-10, 10)]
+#sigmoid_out = [sigmoid(x) for x in inputs]
+#tanh_out = [tanh(x) for x in inputs]
+#ReLU_out = [ReLU(x) for x in inputs]
+#linear_out = [linear(x) for x in inputs]
 
 # softmax is probability list and cannot be graphed
-soft_inputs = np.arange(5.0)
-softmax_out = softmax(soft_inputs)
-
-deriv_softmax(soft_inputs, softmax_out)
+#soft_inputs = np.arange(5.0)
+#softmax_out = softmax(soft_inputs)
+#deriv_softmax(soft_inputs, softmax_out)
 
 
 
 # Setup subplots
-plt.subplot(3,3,1)
-plt.title('Sigmoid')
-plt.plot(inputs, sigmoid_out)
 
-plt.subplot(3,3,2)
-plt.title('tanh')
-plt.plot(inputs, tanh_out)
 
-plt.subplot(3,3,3)
-plt.title('ReLU')
-plt.plot(inputs, ReLU_out)
+#plt.subplot(3,3,1)
+#plt.title('Sigmoid')
+#plt.plot(inputs, sigmoid_out)
 
-plt.subplot(3,3,4)
-plt.title('Linear')
-plt.plot(inputs, linear_out)
+#plt.subplot(3,3,2)
+#plt.title('tanh')
+#plt.plot(inputs, tanh_out)
 
-plt.show()
+#plt.subplot(3,3,3)
+#plt.title('ReLU')
+#plt.plot(inputs, ReLU_out)
+
+#plt.subplot(3,3,4)
+#plt.title('Linear')
+#plt.plot(inputs, linear_out)
+
+#plt.show()
