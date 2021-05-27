@@ -12,8 +12,8 @@ def mse(predicted, actual):
     return(error)
 
 def deriv_mse(predicted, actual):
-    dE_doutnode = -(actual-predicted)
-    return(dE_doutnode)
+    dmse_dpred = -(actual-predicted)
+    return(soln)
      
 
 
@@ -23,4 +23,10 @@ def deriv_mse(predicted, actual):
 def cross_entropy(predicted, actual):
     error = (1/len(predicted))*sum(actual*np.log(predicted)+(1-actual)*np.log(1-predicted))
     return(error)
+
+def deriv_cross_entropy(predicted, actual):
+    dce_dpred = -((actual/predicted)-((1-actual)/(1-predicted)))
+    return(dce_dpred)
+
+
 

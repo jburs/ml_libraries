@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import activation_fns as afn
-from error_fns import mse, deriv_mse
+import error_fns as efn
 import matplotlib.pyplot as plt 
 
 # Simple data for learing even vs. odd. 1=odd, 0=even
@@ -22,13 +22,13 @@ Y = np.array([.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5
 # Simple neural net 
 
 
-def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_input_nodes=1, num_output_nodes=1, max_epoch=100, accuracy_threshold=0.4):
+def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=2, num_input_nodes=1, num_output_nodes=1, max_epoch=500, accuracy_threshold=0.4):
     print('initializing')
     print('---------------------\n')
 
     # Initial declarations
     epoch = 0
-    error = 1.0
+    loss_per_epoch = 1.0
     data = X
     actual = Y
     input_weights = np.array([])
@@ -42,24 +42,24 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
     # Initial activation fns and deriv, error fn declarations
     hidden_1_activ_fn = afn.sigmoid
     hidden_1_active_fn_deriv = afn.deriv_sigmoid
-    output_activ_fn = afn.ReLU
-    output_active_fn_deriv = afn.deriv_ReLU
-    error_fn = mse
-    error_fn_deriv = deriv_mse
+    output_activ_fn = afn.sigmoid
+    output_active_fn_deriv = afn.deriv_sigmoid
+    error_fn = efn.cross_entropy
+    error_fn_deriv = efn.deriv_cross_entropy
 
 
     # Fill weights
     for i in range(num_hidden_nodes_1):
-        input_weights = np.append(input_weights, random.uniform(-1, 1))
-        hidden_weights_1 = np.append(hidden_weights_1, random.uniform(-1, 1))
+        input_weights = np.append(input_weights, random.uniform(-1.0, 1.0))
+        hidden_weights_1 = np.append(hidden_weights_1, random.uniform(-1.0, 1.0))
     
     # Set random bias
-    input_bias = np.append(input_bias, random.uniform(0.0, 1.0))
-    hidden_bias_1 = np.append(hidden_bias_1, random.uniform(0.0, 1.0))
+    input_bias = np.append(input_bias, random.uniform(-1.0, 1.0))
+    hidden_bias_1 = np.append(hidden_bias_1, random.uniform(-1.0, 1.0))
 
 
     # Initial loop that checks the overall error of the model, or terminates after too many iterations
-    while error > acceptable_error and max_epoch > epoch:
+    while loss_per_epoch > acceptable_error and max_epoch > epoch:
         epoch += 1
         predictions = np.array([])
 
@@ -102,7 +102,7 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
             
                 
             # Store total error for epoch, to later average for a loss per epoch value
-            loss_per_epoch = loss_per_epoch + error
+            loss_per_epoch = loss_per_epoch + abs(error)
             
             
 
@@ -135,7 +135,7 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
             # dE/dnetO = dE/doutO * doutO/dnetO
             # Thus dE/dwi = (sum Output neurons (dE/doutO * doutO/dnetO * dnetO/douth)) * douth/dneth * dneth/dw
             for i in range(len(input_weights)):
-                dE_doutO = deriv_mse(prediction, actual[point])             # Deriv error neuron w.r.t ouput neurons
+                dE_doutO = error_fn_deriv(prediction, actual[point])             # Deriv error neuron w.r.t ouput neurons
                 doutO_dnetO = output_active_fn_deriv(output_in)             # Deriv output w.r.t input to output node
                 dnetO_douth = hidden_weights_1[i]                           # Deriv input to output node w.r.t. hidden node output
                 douth_dneth = hidden_1_active_fn_deriv(net_in_hidden_1[i])  # Deriv hidden node output w.r.t. net input to hidden node
@@ -153,7 +153,6 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
             hidden_weights_1 = hidden_weights_1_new
             input_weights = input_weights_new
 
-            # Check for 0 weight trap
 
 
         # epoch finished, store loss and accuracy 
@@ -162,7 +161,7 @@ def nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=5, num_
         accuracy_per_epoch = accuracy_per_epoch/len(data)
         accuracy_training = np.append(accuracy_training, accuracy_per_epoch)
 
-        
+        print(loss_per_epoch)
 
 
         # print out # epoch
