@@ -17,6 +17,8 @@ def knn(data, k=3, epoch_max=2, target_accuracy = .05):
     #initial variable declaration
     accuracy = 1.0
     epoch = 1
+    k_dict = dict.fromkeys([i for i in range(k)], list())
+
 
     # initialize k central points randomly from data points, check uniqueness
     unique = False
@@ -32,7 +34,7 @@ def knn(data, k=3, epoch_max=2, target_accuracy = .05):
         #if len(k_vals) == len(set(k_vals)):
          #   unique = True
 
-        print(k_vals)
+        print("initial K values\n", k_vals)
         unique = True
 
     # repeat until accuracy < target accuracy
@@ -45,19 +47,39 @@ def knn(data, k=3, epoch_max=2, target_accuracy = .05):
             for i in range(k):
                 # euclidean dist = normal of the difference between two vectors (points)
                 dist = np.linalg.norm(point - k_vals[i])
+                distances.append([dist, i])
 
+            # Sorts distances to eack k centre . distances[0] = [shortest_distnace, k_centre] of closest k
+            distances = sorted(distances)
+            print("distnaces")
+
+            #append point to closest k  group in dict
+            print(k_dict[distances[0][1]])
+            k_dict[distances[0][1]].append(list(point))
+        
+        print("k_dict\n", k_dict)
+    
+
+
+        # find the center of each k group = new k
+
+
+
+
+
+
+        
+        
+        
         epoch += 1
 
 
-    # find the center of each k group = new k
+
 
 
     # check difference between old and new k against accuracy limit
 
 
 knn(data)
-
-#plt.scatter(X, y)
-#plt.show()
 
 
