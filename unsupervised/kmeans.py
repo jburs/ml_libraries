@@ -10,8 +10,9 @@ import os
 
 file_path = "../../resources/new_iris_data.csv"
 
-df = pd.read_csv(os.path.dirname(__file__) + file_path)
-#print(df.head(3))
+#df = pd.read_csv(os.path.dirname(__file__) + file_path)
+df = pd.read_csv(os.path.join(os.path.dirname( __file__ ), '..', 'resources/new_iris_data.csv'))
+
 
 # Pre processing for dataset
 df_scalled = StandardScaler().fit_transform(df)
