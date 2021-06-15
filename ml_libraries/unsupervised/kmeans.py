@@ -5,19 +5,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from ml_libraries.feature_scaling import feature_scaling
 from random import randrange
 import os
 
 file_path = "../../resources/new_iris_data.csv"
 
-#df = pd.read_csv(os.path.dirname(__file__) + file_path)
-df = pd.read_csv(os.path.join(os.path.dirname( __file__ ), '..', 'resources/new_iris_data.csv'))
+df = pd.read_csv(os.path.dirname(__file__) + file_path) # windows
+#df = pd.read_csv(os.path.join(os.path.dirname( __file__ ), '..', 'resources/new_iris_data.csv')) # Mac
 
 
 # Pre processing for dataset
-df_scalled = StandardScaler().fit_transform(df)
+#df_scaled = StandardScaler().fit_transform(df)
+df_scaled = feature_scaling.rescaling(df)
+
 pca = PCA(n_components=2)
-df_pca = pca.fit_transform(df_scalled)
+df_pca = pca.fit_transform(df_scaled)
 # Transform PCA to dataframe
 df_scalled_pca = pd.DataFrame(data=df_pca, columns=['principal component 1', 'principle component 2'])
 

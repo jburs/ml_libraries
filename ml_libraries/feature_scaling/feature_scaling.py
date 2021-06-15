@@ -5,7 +5,7 @@ import pandas as pd
 X = np.array([1.0, 5.4, 9.1, 2.7, 5.2, 9.5, 1.6, 8.9, 3.0, 5.3, 11.1])
 
 df = pd.DataFrame(np.random.randint(0, 10, size=(5,4)), columns=list('ABCD'))
-print(df.head())
+#print(df.head())
 
 
 # Rescaling Min-max normalization for numpy array 
@@ -79,5 +79,5 @@ def standardizaion(data):
 #print(X, "\n")
 
 #print(rescaling(df), "\n")
-print(standardizaion(df), "\n")
+#print(standardizaion(df), "\n")
 
