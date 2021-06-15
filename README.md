@@ -1,6 +1,8 @@
 # ml_libraries
 machine learning library
 
+# Packaging
+https://packaging.python.org/tutorials/packaging-projects/
 
 # K means algorithm
 loc:  unsupervised / k means
