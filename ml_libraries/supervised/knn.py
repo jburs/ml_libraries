@@ -93,6 +93,9 @@ def knn_classification(data, data_classifying, kn=5, kn_weight=True):
 df_classified = knn_classification(df, df_classification, kn_weight=True)
 
 
-plt.scatter(df['a'],df['b'], c=df['group'], marker='x')
-plt.scatter(df_classified['a'],df_classified['b'], c=df_classified['group'], marker='*')
+p1 = plt.scatter(df['a'],df['b'], c=df['group'], marker='x')
+p2 = plt.scatter(df_classified['a'],df_classified['b'], c=df_classified['group'], marker='*')
+plt.title('knn classification')
+plt.legend([p1, p2], ['known', 'predicted'])
+
 plt.show()
