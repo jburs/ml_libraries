@@ -68,6 +68,9 @@ def get_split(data):
                 best_feature = columns[i]
                 best_value = x
                 max_gain = gini_gain
+
+    df_left = data.loc[data[best_feature] < best_value]
+    df_right = data.loc[data[best_feature] >= best_value]
                
 
     return best_feature, best_value, df_left, df_right
@@ -86,14 +89,21 @@ def predict(split_data):
     return prediction, accuracy
 
 
+def check_endnode(data, depth, max_depth, min_samples):
+    """ check if current node is an end node """
+    if depth >= max_depth or len(data.index) > min_samples:
+        # make prediction
+        pass
 
-
+    else:
+        #calculate next node and store right df 
+        pass
 
 def decision_tree(data, max_depth=3, min_samples=25):
     
     tree = dict()
     tree_list = []
-    depth = 0
+    depth = 1
     building = True
     end_node = False
     right_dfs = []
@@ -107,43 +117,37 @@ def decision_tree(data, max_depth=3, min_samples=25):
     right_dfs.append(df_right)                      # Store df_right 
 
 
+    # Next time:
+    # finish check_endnode function
+    # use check endnode to do tree_list append and depth tracking (maybe even splitting)
+
     while building == True:
-        depth += 1
+        while depth <= max_depth and len(df_left.index) > min_samples:
+                # Loop through left side of tree
+                best_feature, best_value, df_left, df_right = get_split(df_left) 
+                tree_list.append([best_feature, best_value, depth, 'left'])                 # Store split
+                right_dfs.append(df_right)                      # Store df_right 
+                depth += 1
 
-        # Loop through left datasets
-        n_left = len(df_left.index)
-        if (depth < max_depth) and n_left >= min_samples and end_node == False:
-            # Get split on left dataset
-            best_feature, best_value, df_left, df_right = get_split(df_left)
-
-            tree_list.append([best_feature, best_value, 'left'])                 # Store split
-            right_dfs.append(df_right)                      # Store df_right 
-
-
-        #else get split on previous right dataset
-        else:
-            end_node = True # hit end node on left side
-
-            # Predict on df_left
-            print(df_left.head())
-            prediction, accuracy = predict(df_left)
-            
-
-            # Get split on right dataset
-            best_feature, best_value, df_left, df_right = get_split(df_right)
-
-            tree_list.append([best_feature, best_value, 'right'])                 # Store split
-            right_dfs.append(df_right)                      # Store df_right 
-            #depth+= 1                                       # increment node depth
+        # iterate over right side
+        if len(df_right)>0:
+            best_feature, best_value, df_left, df_right = get_split(df_right) 
+            tree_list.append([best_feature, best_value, depth, 'right'])                 # Store split
+            right_dfs = right_dfs[:-1]
+            depth += -1
 
 
+        df_right = []
+        if not df_right: 
             building = False
 
+    
 
 
 
 
-    return tree
+
+    return tree_list
 
 
 
