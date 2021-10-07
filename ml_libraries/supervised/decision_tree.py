@@ -59,7 +59,7 @@ def get_split(data):
             w_gini = gini_left * w_left + gini_right * w_right
             
 
-            # Calculate gini gain (we want to minimize w_gini for the smallest impurity ideal case is split is perfect Left=c1, Right=c2)
+            # Calculate gini gain (we want to minimize w_gini for the smallest impurity. Ideal split is perfect Left=c1, Right=c2)
             # why not just find min w_gin instead of uding gini_gain and gini_base vaiables?
             gini_gain = gini_base - w_gini
 
@@ -76,78 +76,95 @@ def get_split(data):
     return best_feature, best_value, df_left, df_right
 
 
-def predict(split_data):
-    """ makes prediction based on most common class """
+def check_endnode(data, depth, max_depth=3, min_samples=15):
+    """ check if current node is an end node or continue splitting"""
 
+    # check for endnode, return a prediction
+    if depth >= max_depth or len(data.index) < min_samples:
+        end_node = True
+        return(end_node)
 
-    # returns the most common class and accuracy (value_counts sorts descending from largest count)
-    class_count = split_data.iloc[:,-1].value_counts()
-    classes = sorted(split_data.iloc[:,-1].unique())
-    prediction = class_count.index[0]
-    accuracy = class_count[prediction]/sum(class_count[i] for i in classes)
-
-    return prediction, accuracy
-
-
-def check_endnode(data, depth, max_depth, min_samples):
-    """ check if current node is an end node """
-    if depth >= max_depth or len(data.index) > min_samples:
-        # make prediction
-        pass
-
+    # if not endnode, get split
     else:
-        #calculate next node and store right df 
-        pass
+        end_node = False
+        return(end_node)
+
+
+
 
 def decision_tree(data, max_depth=3, min_samples=25):
     
     tree = dict()
     tree_list = []
-    depth = 1
+    depth = 0
     building = True
     end_node = False
     right_dfs = []
-
-    # if there is GINI to be gained, we split further
-    
-
-    #initialize root node
-    best_feature, best_value, df_left, df_right = get_split(data) 
-    tree_list.append([best_feature, best_value, 'root'])                 # Store split
-    right_dfs.append(df_right)                      # Store df_right 
+    right_depths = []
 
 
-    # Next time:
-    # finish check_endnode function
-    # use check endnode to do tree_list append and depth tracking (maybe even splitting)
+
+    print('\n--------  Starting  ---------\n')
 
     while building == True:
-        while depth <= max_depth and len(df_left.index) > min_samples:
-                # Loop through left side of tree
-                best_feature, best_value, df_left, df_right = get_split(df_left) 
-                tree_list.append([best_feature, best_value, depth, 'left'])                 # Store split
-                right_dfs.append(df_right)                      # Store df_right 
-                depth += 1
 
-        # iterate over right side
-        if len(df_right)>0:
-            best_feature, best_value, df_left, df_right = get_split(df_right) 
-            tree_list.append([best_feature, best_value, depth, 'right'])                 # Store split
-            right_dfs = right_dfs[:-1]
-            depth += -1
+        # get split, increment depth, store df_right, check end node status
+        if end_node == False:
+            best_feature, best_value, df_left, df_right = get_split(data)
+            depth += 1 
+            right_dfs.append([df_right, depth]) 
+            right_depths.append(depth)
+            
+            end_node = check_endnode(df_left, depth)      
+
+        
+        if end_node == False:
+            # Store split, set next data to left, increase depth
+            tree_list.append(['split', best_feature, best_value, depth])
+            print('split', best_feature, best_value, depth)
+            data = df_left
+            
 
 
-        df_right = []
-        if not df_right: 
+        # Check there are still splits ready
+        if len(right_dfs)==0: 
             building = False
+            break
+
+
+        if end_node == True:
+            # make prediction
+            class_count = data.iloc[:,-1].value_counts()                    
+            classes = sorted(data.iloc[:,-1].unique())
+            prediction = class_count.index[0]
+            node_accuracy = class_count[prediction]/sum(class_count[i] for i in classes)
+            tree_list.append([end_node, prediction, node_accuracy, depth])       # store right end node
+            print(end_node, prediction, node_accuracy, depth)
+
+            # set next data to prev right, adjust depth, remove right df from right backlog
+            
+            data = right_dfs.pop()[0]
+            depth = right_depths.pop()
+
+            
+        
+            # Check if df_right is also an end_node
+            end_node = check_endnode(data, depth)
+
+
+
+
+
 
     
 
-
-
-
-
     return tree_list
+
+
+
+
+
+
 
 
 
