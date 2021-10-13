@@ -1,5 +1,5 @@
 # ml_libraries
-machine learning library to be used with pandas. Includes neural network, gradient descent, k nearest neighbors, and k means algorithms. 
+machine learning library to be used with pandas. Includes neural network, gradient descent, k nearest neighbors, decision tree, and k means algorithms. 
 fearure_scaling includes tools for use with the libraries. Includes data rescaling tools and standardization. 
 
 # Packaging
@@ -14,8 +14,8 @@ to use: import nn_first, activation functions, and error functions.
 call: nn_first(X=X, Y=Y, lr=.01, acceptable_error=.005, num_hidden_nodes_1=2, num_input_nodes=1, num_output_nodes=1, max_epoch=500, accuracy_threshold=0.4):
 
 
-
-# K means algorithm
+# Unsupervised models
+## K means algorithm
 loc:  unsupervised / k means
 
 info: unsupervised ml algorithm, uses python and pandas dataframes to categorize data into k=n data clusters. Outputs the input dataframe with an added 'k' column for the cluster, and 'k' dataframe containg the k means.
@@ -25,8 +25,9 @@ To use: import kmeans, and call kmeans(df_data, k=3, max_epoch=25, target_kmean_
 ![kmeans_iris_plot.png](https://github.com/jburs/ml_libraries/blob/main/ml_libraries/images/kmeans_iris_plot.png)
 
 
-
+# Supervised models
 # K nearest neighbors algorithm (knn)
+loc: supervised / knn
 
 info: supervised ml algorithm, uses python and pandas dataframes to catagorize unknown data based on a known set of data. Known dataset needs the group/classification as the final column. unknown dataset must have columns in the same order, without the group/classification column. Will return a new dataframe of the unknown data with a classification column added to the end. 
 
@@ -34,3 +35,15 @@ to use: import knn_classification, pandas, and from statistics import mode if kn
 knn_classification(data, data_classifying, kn=5, kn_weight=True)
 
 ![knn_classification_plot.png](https://github.com/jburs/ml_libraries/blob/main/ml_libraries/images/knn_classification_plot.png)
+
+
+# Decision tree
+loc: supervised / decision_tree
+
+info: supervised ml algorithm, uses python and pandas dataframes to create a mapping tree to catagorize data based on the best splits within the dataset. 
+
+to use: import decision_tree, and pandas. Set max max_depth, and min_samples to decide when to stop building the tree with splits, and predict. 
+
+
+
+

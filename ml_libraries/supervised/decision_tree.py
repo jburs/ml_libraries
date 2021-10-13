@@ -92,7 +92,7 @@ def check_endnode(data, depth, max_depth=3, min_samples=15):
 
 
 
-def decision_tree(data, max_depth=3, min_samples=25):
+def decision_tree(data):
     
     tree = dict()
     tree_list = []
@@ -105,7 +105,6 @@ def decision_tree(data, max_depth=3, min_samples=25):
 
 
     print('\n--------  Starting  ---------\n')
-
     while building == True:
 
         # get split, increment depth, store df_right, check end node status
@@ -114,8 +113,8 @@ def decision_tree(data, max_depth=3, min_samples=25):
             depth += 1 
             right_dfs.append([df_right, depth]) 
             right_depths.append(depth)
-            
-            end_node = check_endnode(df_left, depth)      
+            data = df_left
+            end_node = check_endnode(data, depth)      
 
         
         if end_node == False:
@@ -150,6 +149,7 @@ def decision_tree(data, max_depth=3, min_samples=25):
         
             # Check if df_right is also an end_node
             end_node = check_endnode(data, depth)
+            print(end_node)
 
 
 
@@ -170,7 +170,7 @@ def decision_tree(data, max_depth=3, min_samples=25):
 
 
 tree = decision_tree(df)
-print(tree)
+#print(tree)
 
 
 
